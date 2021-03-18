@@ -27,23 +27,7 @@
               <img :src="floor.imgUrl" />
             </div>
             <div class="floorBanner">
-              <div class="swiper-container" id="floor1Swiper">
-                <div class="swiper-wrapper">
-                  <div
-                    class="swiper-slide"
-                    v-for="(carouse, index) in floor.carouselList"
-                    :key="carouse.id"
-                  >
-                    <img :src="carouse.imgUrl" />
-                  </div>
-                </div>
-                <!-- 如果需要分页器 -->
-                <div class="swiper-pagination"></div>
-
-                <!-- 如果需要导航按钮 -->
-                <div class="swiper-button-prev"></div>
-                <div class="swiper-button-next"></div>
-              </div>
+              <SliderLoop :bannerList="floor.carouselList" :refName="'floorSwiper'"></SliderLoop>
             </div>
             <div class="split">
               <span class="floor-x-line"></span>
@@ -74,9 +58,15 @@
 </template>
 
 <script>
+import Swiper from "swiper/js/swiper";
+import { mapState } from "vuex";
+
 export default {
   name: "Floor",
   props: ["floor"],
+  mounted() {
+    
+  },
 };
 </script>
 
