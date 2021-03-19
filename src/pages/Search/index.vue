@@ -11,15 +11,38 @@
             </li>
           </ul>
           <ul class="fl sui-tag">
-            <li class="with-x">手机</li>
-            <li class="with-x">iphone<i>×</i></li>
-            <li class="with-x">华为<i>×</i></li>
-            <li class="with-x">OPPO<i>×</i></li>
+            <li class="with-x" v-if="searchParams.categoryName">
+              {{ searchParams.categoryName }}
+              <i @click="removeCategoryName">×</i>
+            </li>
+
+            <!-- 页面中显示 -->
+            <li class="with-x" v-if="searchParams.keyword">
+              {{ searchParams.keyword }}
+              <i @click="removeKeyword">×</i>
+            </li>
+
+            <li class="with-x" v-if="searchParams.trademark">
+              {{ searchParams.trademark.split(":")[1] }}
+              <i @click="removeTrademark">×</i>
+            </li>
+
+            <li
+              class="with-x"
+              v-for="(prop, index) in searchParams.props"
+              :key="index"
+            >
+              {{ prop.split(":")[1] }}
+              <i @click="removeProp(index)">×</i>
+            </li>
           </ul>
         </div>
 
         <!--selector-->
-        <SearchSelector />
+        <SearchSelector
+          @searchForTrademark="searchForTrademark"
+          @searchForProps="searchForProps"
+        />
 
         <!--details-->
         <div class="details clearfix">
@@ -145,7 +168,7 @@ export default {
     };
   },
   beforeMount() {
-    this.handelrSearchParams()
+    this.handelrSearchParams();
   },
   mounted() {
     this.getGoodsListInfo();
@@ -173,13 +196,45 @@ export default {
       };
       this.searchParams = obj;
     },
+    removeCategoryName() {
+      this.searchParams.categoryName = undefined;
+
+      this.$router.push({ name: "search", params: this.$route.params });
+    },
+    removeKeyword() {
+      this.searchParams.keyword = undefined;
+
+      this.$bus.$emit("clearKeyword");
+      this.$router.push({ name: "search", query: this.$router.query });
+    },
+    // 按品牌搜索
+    searchForTrademark(tm) {
+      this.searchParams.trademark = `${tm.tmId}:${tm.tmName}`;
+      this.getGoodsListInfo();
+    },
+    removeTrademark() {
+      this.searchParams.trademark = undefined;
+      this.getGoodsListInfo();
+    },
+    searchForProps(attrValue, attr) {
+      let prop = `${attr.attrId}:${attrValue}:${attr.attrName}`;
+      let isRepeat = this.searchParams.props.some((item) => item === prop);
+      if (isRepeat) {
+        return;
+      }
+      this.searchParams.props.push(prop);
+      this.getGoodsListInfo();
+    },
+    removeProp(index) {
+      this.searchParams.props.splice(index, 1);
+      this.getGoodsListInfo();
+    },
   },
 
   watch: {
     $route: {
       handler(nweVal, oldVal) {
-        this.handelrSearchParams(),
-        this.getGoodsListInfo()
+        this.handelrSearchParams(), this.getGoodsListInfo();
       },
     },
   },
