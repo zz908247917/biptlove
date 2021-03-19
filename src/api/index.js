@@ -29,3 +29,14 @@ export const reqFloorList = () => {
         method: 'get'
     })
 }
+
+
+export const reqGoodsListInof = (searchParams) => {
+    return Ajax({
+        url: '/list',
+        method: 'post',
+        data: searchParams
+    })
+}
+
+// reqGoodsListInof({})
